@@ -1,5 +1,7 @@
 #!/bin/sh
-	
+
+	set -e
+
 	export ARMGCC_DIR=/usr
 
 	mkdir -p work
@@ -19,6 +21,7 @@
 	cp ../../src/boot/ksdk1.1.0/devHDC1000.*			work/demos/Warp/src/
 	cp ../../src/boot/ksdk1.1.0/devMAG3110.*			work/demos/Warp/src/
 	cp ../../src/boot/ksdk1.1.0/devSI7021.*				work/demos/Warp/src/
+	cp ../../src/boot/ksdk1.1.0/devSSD1331.*			work/demos/Warp/src/
 	cp ../../src/boot/ksdk1.1.0/devL3GD20H.*			work/demos/Warp/src/
 	cp ../../src/boot/ksdk1.1.0/devBME680.*				work/demos/Warp/src/
 	cp ../../src/boot/ksdk1.1.0/devTCS34725.*			work/demos/Warp/src/

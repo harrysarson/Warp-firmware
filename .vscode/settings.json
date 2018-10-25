@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "segger_rtt.h": "c",
+        "devccs811.h": "c",
+        "devssd1331.h": "c"
+    },
+    "editor.tabSize": 8
+}

@@ -64,6 +64,7 @@
 #include "devTCS34725.h"
 #include "devSI4705.h"
 #include "devCCS811.h"
+#include "devSSD1331.h"
 #include "devAMG8834.h"
 #include "devPAN1326.h"
 #include "devAS7262.h"
@@ -1100,6 +1101,10 @@ main(void)
 	 */
 	OSA_TimeDelay(1000);
 
+	/*
+	 * Initialise oled
+	 */
+	devSSD1331init();
 
 	while (1)
 	{
