@@ -21,7 +21,7 @@ enum
 	kSSD1331PinSCK		= GPIO_MAKE_PIN(HW_GPIOA, 9),
 	kSSD1331PinCSn		= GPIO_MAKE_PIN(HW_GPIOB, 13),
 	kSSD1331PinDC		= GPIO_MAKE_PIN(HW_GPIOA, 12),
-	kSSD1331PinRST		= GPIO_MAKE_PIN(HW_GPIOA, 2),
+	kSSD1331PinRST		= GPIO_MAKE_PIN(HW_GPIOB, 0),
 };
 
 static int
@@ -64,6 +64,7 @@ writeCommand(uint8_t commandByte)
 int
 devSSD1331init(void)
 {
+	SEGGER_RTT_WriteString(0, "\r\nenabling spi...\n");
 	/*
 	 *	Override Warp firmware's use of these pins.
 	 *
@@ -73,6 +74,7 @@ devSSD1331init(void)
 	PORT_HAL_SetMuxMode(PORTA_BASE, 9u, kPortMuxAlt3);
 
 	enableSPIpins();
+	SEGGER_RTT_WriteString(0, "\r\ndone spi...\n");
 
 	/*
 	 *	Override Warp firmware's use of these pins.
@@ -81,8 +83,9 @@ devSSD1331init(void)
 	 */
 	PORT_HAL_SetMuxMode(PORTB_BASE, 13u, kPortMuxAsGpio);
 	PORT_HAL_SetMuxMode(PORTA_BASE, 12u, kPortMuxAsGpio);
-	PORT_HAL_SetMuxMode(PORTA_BASE, 2u, kPortMuxAsGpio);
+	PORT_HAL_SetMuxMode(PORTB_BASE, 0u, kPortMuxAsGpio);
 
+	SEGGER_RTT_WriteString(0, "\r\n\rst sequence...\n");
 
 	/*
 	 *	RST high->low->high.
@@ -134,14 +137,14 @@ devSSD1331init(void)
 	writeCommand(kSSD1331CommandCONTRASTC);		// 0x83
 	writeCommand(0x7D);
 	writeCommand(kSSD1331CommandDISPLAYON);		// Turn on oled panel
-//	SEGGER_RTT_WriteString(0, "\r\n\tDone with initialization sequence...\n");
+	SEGGER_RTT_WriteString(0, "\r\n\tDone with initialization sequence...\n");
 
 	/*
 	 *	To use fill commands, you will have to issue a command to the display to enable them. See the manual.
 	 */
 	writeCommand(kSSD1331CommandFILL);
 	writeCommand(0x01);
-//	SEGGER_RTT_WriteString(0, "\r\n\tDone with enabling fill...\n");
+	SEGGER_RTT_WriteString(0, "\r\n\tDone with enabling fill...\n");
 
 	/*
 	 *	Clear Screen
@@ -151,7 +154,7 @@ devSSD1331init(void)
 	writeCommand(0x00);
 	writeCommand(0x5F);
 	writeCommand(0x3F);
-//	SEGGER_RTT_WriteString(0, "\r\n\tDone with screen clear...\n");
+	SEGGER_RTT_WriteString(0, "\r\n\tDone with screen clear...\n");
 
 
 
@@ -168,23 +171,25 @@ devSSD1331init(void)
 		6.   Set the outline color C, B and A. e.g., (28d, 0d, 0d) for blue color
 		7.   Set the filled color C, B and A.e.g., (0d, 0d, 40d) for red color
 	 */
-
-	writeCommand(0xA1); // set enable fill for draw rectangle
 	writeCommand(0x22);  // Enter the “draw rectangle mode” by execute the command 22h
-	writeCommand(0x0);
-	writeCommand(0x0);
+	// top left corner
+	writeCommand(0);
+	writeCommand(0);
+	// bottom right corner
 	writeCommand(95);
 	writeCommand(63);
-	writeCommand(28);
+	// rgb outline
 	writeCommand(0x0);
+	writeCommand(0x3F);
 	writeCommand(0x0);
+	// rgb fill
 	writeCommand(0x0);
-	writeCommand(0);
-	writeCommand(40);
+	writeCommand(0x3F);
+	writeCommand(0x0);
 
 
 
-//	SEGGER_RTT_WriteString(0, "\r\n\tDone with draw rectangle...\n");
+	SEGGER_RTT_WriteString(0, "\r\n\tDone with draw rectangle...\n");
 
 
 
