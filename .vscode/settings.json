@@ -2,7 +2,14 @@
     "files.associations": {
         "segger_rtt.h": "c",
         "devccs811.h": "c",
-        "devssd1331.h": "c"
+        "devssd1331.h": "c",
+        "fsl_mcglite_hal.h": "c",
+        "gpio_pins.h": "c",
+        "fsl_gpio_driver.h": "c",
+        "fsl_spi_master_driver.h": "c",
+        "fsl_port_hal.h": "c",
+        "fsl_i2c_hal.h": "c",
+        "devina219.h": "c"
     },
     "editor.tabSize": 8
 }

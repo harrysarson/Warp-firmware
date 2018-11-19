@@ -18646,7 +18646,7 @@ typedef struct _hw_rom
     __I hw_rom_periphid0_t PERIPHID0;      /*!< [0xFE0] Peripheral ID Register */
     __I hw_rom_periphid1_t PERIPHID1;      /*!< [0xFE4] Peripheral ID Register */
     __I hw_rom_periphid2_t PERIPHID2;      /*!< [0xFE8] Peripheral ID Register */
-    __I hw_rom_periphid3_t PERIPHID3;      /*!< [0xFEC] Peripheral ID Register */
+    __I hw_rom_periphid3_t PERIPHID3;      /*!< [0xFEC] Peri  pheral ID Register */
     __I hw_rom_compidn_t COMPIDn[4];       /*!< [0xFF0] Component ID Register */
 } hw_rom_t;
 #pragma pack()

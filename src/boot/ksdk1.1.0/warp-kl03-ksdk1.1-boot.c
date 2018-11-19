@@ -1115,6 +1115,36 @@ main(void)
 		SEGGER_RTT_WriteString(0, ".");
 		OSA_TimeDelay(1000);
 
+		// repeatRegisterReaviceAndAddress(menuTargetSensor /*warpSensorDevice*/,
+		// 				menuRegisterAddress /*baseAddress */,
+		// 				menuI2cPullupValue,
+		// 				autoIncrement /*autoIncrement*/,
+		// 				chunkReadsPerAddress,
+		// 				chatty,
+		// 				spinDelay,
+		// 				repetitionsPerAddress,
+		// 				menuSupplyVoltage,
+		// 				adaptiveSssupplyMaxMillivolts,
+		// 				referenceByte
+		// 			);
+
+		loopForSensor(	"\r\nADXL362:\n\r",		/*	tagString			*/
+				&readSensorRegisterADXL362,	/*	readSensorRegisterFunction	*/
+				NULL,				/*	i2cDeviceState			*/
+				&deviceADXL362State,		/*	spiDeviceState			*/
+				baseAddress,			/*	baseAddress			*/
+				0x00,				/*	minAddress			*/
+				0x2E,				/*	maxAddress			*/
+				repetitionsPerAddress,		/*	repetitionsPerAddress		*/
+				chunkReadsPerAddress,		/*	chunkReadsPerAddress		*/
+				spinDelay,			/*	spinDelay			*/
+				autoIncrement,			/*	autoIncrement			*/
+				sssupplyMillivolts,		/*	sssupplyMillivolts		*/
+				referenceByte,			/*	referenceByte			*/
+				adaptiveSssupplyMaxMillivolts,	/*	adaptiveSssupplyMaxMillivolts	*/
+				chatty				/*	chatty				*/
+				);
+
 		// /*
 		//  *	Do not, e.g., lowPowerPinStates() on each iteration, because we actually
 		//  *	want to use menu to progressiveley change the machine state with various

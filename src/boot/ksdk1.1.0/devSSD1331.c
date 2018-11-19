@@ -8,20 +8,28 @@
 #include "warp.h"
 #include "devSSD1331.h"
 
-volatile uint8_t	inBuffer[32];
-volatile uint8_t	payloadBytes[32];
+#define TRY_WRITING_COMMAND(command)                      \
+	{                                                 \
+		int return_value = writeCommand(command); \
+		if (return_value != 0)                    \
+		{                                         \
+			return return_value;              \
+		}                                         \
+	}
 
+volatile uint8_t inBuffer[32];
+volatile uint8_t payloadBytes[32];
 
 /*
  *	Override Warp firmware's use of these pins and define new aliases.
  */
 enum
 {
-	kSSD1331PinMOSI		= GPIO_MAKE_PIN(HW_GPIOA, 8),
-	kSSD1331PinSCK		= GPIO_MAKE_PIN(HW_GPIOA, 9),
-	kSSD1331PinCSn		= GPIO_MAKE_PIN(HW_GPIOB, 13),
-	kSSD1331PinDC		= GPIO_MAKE_PIN(HW_GPIOA, 12),
-	kSSD1331PinRST		= GPIO_MAKE_PIN(HW_GPIOB, 0),
+	kSSD1331PinMOSI = GPIO_MAKE_PIN(HW_GPIOA, 8),
+	kSSD1331PinSCK = GPIO_MAKE_PIN(HW_GPIOA, 9),
+	kSSD1331PinCSn = GPIO_MAKE_PIN(HW_GPIOB, 13),
+	kSSD1331PinDC = GPIO_MAKE_PIN(HW_GPIOA, 12),
+	kSSD1331PinRST = GPIO_MAKE_PIN(HW_GPIOB, 0),
 };
 
 static int
@@ -44,12 +52,12 @@ writeCommand(uint8_t commandByte)
 	GPIO_DRV_ClearPinOutput(kSSD1331PinDC);
 
 	payloadBytes[0] = commandByte;
-	status = SPI_DRV_MasterTransferBlocking(0	/* master instance */,
-					NULL		/* spi_master_user_config_t */,
-					(const uint8_t * restrict)&payloadBytes[0],
-					(uint8_t * restrict)&inBuffer[0],
-					1		/* transfer size */,
-					1000		/* timeout in microseconds (unlike I2C which is ms) */);
+	status = SPI_DRV_MasterTransferBlocking(0 /* master instance */,
+						NULL /* spi_master_user_config_t */,
+						(const uint8_t *restrict) & payloadBytes[0],
+						(uint8_t * restrict) & inBuffer[0],
+						1 /* transfer size */,
+						1000 /* timeout in microseconds (unlike I2C which is ms) */);
 
 	/*
 	 *	Drive /CS high
@@ -59,10 +67,7 @@ writeCommand(uint8_t commandByte)
 	return status;
 }
 
-
-
-int
-devSSD1331init(void)
+int devSSD1331init(void)
 {
 	SEGGER_RTT_WriteString(0, "\r\nenabling spi...\n");
 	/*
@@ -100,43 +105,43 @@ devSSD1331init(void)
 	/*
 	 *	Initialization sequence, borrowed from https://github.com/adafruit/Adafruit-SSD1331-OLED-Driver-Library-for-Arduino
 	 */
-	writeCommand(kSSD1331CommandDISPLAYOFF);	// 0xAE
-	writeCommand(kSSD1331CommandSETREMAP);		// 0xA0
-	writeCommand(0x72);				// RGB Color
-	writeCommand(kSSD1331CommandSTARTLINE);		// 0xA1
+	writeCommand(kSSD1331CommandDISPLAYOFF); // 0xAE
+	writeCommand(kSSD1331CommandSETREMAP);   // 0xA0
+	writeCommand(0x72);			 // RGB Color
+	writeCommand(kSSD1331CommandSTARTLINE);  // 0xA1
 	writeCommand(0x0);
-	writeCommand(kSSD1331CommandDISPLAYOFFSET);	// 0xA2
+	writeCommand(kSSD1331CommandDISPLAYOFFSET); // 0xA2
 	writeCommand(0x0);
-	writeCommand(kSSD1331CommandNORMALDISPLAY);	// 0xA4
-	writeCommand(kSSD1331CommandSETMULTIPLEX);	// 0xA8
-	writeCommand(0x3F);				// 0x3F 1/64 duty
-	writeCommand(kSSD1331CommandSETMASTER);		// 0xAD
+	writeCommand(kSSD1331CommandNORMALDISPLAY); // 0xA4
+	writeCommand(kSSD1331CommandSETMULTIPLEX);  // 0xA8
+	writeCommand(0x3F);			    // 0x3F 1/64 duty
+	writeCommand(kSSD1331CommandSETMASTER);     // 0xAD
 	writeCommand(0x8E);
-	writeCommand(kSSD1331CommandPOWERMODE);		// 0xB0
+	writeCommand(kSSD1331CommandPOWERMODE); // 0xB0
 	writeCommand(0x0B);
-	writeCommand(kSSD1331CommandPRECHARGE);		// 0xB1
+	writeCommand(kSSD1331CommandPRECHARGE); // 0xB1
 	writeCommand(0x31);
-	writeCommand(kSSD1331CommandCLOCKDIV);		// 0xB3
-	writeCommand(0xF0);				// 7:4 = Oscillator Frequency, 3:0 = CLK Div Ratio (A[3:0]+1 = 1..16)
-	writeCommand(kSSD1331CommandPRECHARGEA);	// 0x8A
+	writeCommand(kSSD1331CommandCLOCKDIV);   // 0xB3
+	writeCommand(0xF0);			 // 7:4 = Oscillator Frequency, 3:0 = CLK Div Ratio (A[3:0]+1 = 1..16)
+	writeCommand(kSSD1331CommandPRECHARGEA); // 0x8A
 	writeCommand(0x64);
-	writeCommand(kSSD1331CommandPRECHARGEB);	// 0x8B
+	writeCommand(kSSD1331CommandPRECHARGEB); // 0x8B
 	writeCommand(0x78);
-	writeCommand(kSSD1331CommandPRECHARGEA);	// 0x8C
+	writeCommand(kSSD1331CommandPRECHARGEA); // 0x8C
 	writeCommand(0x64);
-	writeCommand(kSSD1331CommandPRECHARGELEVEL);	// 0xBB
+	writeCommand(kSSD1331CommandPRECHARGELEVEL); // 0xBB
 	writeCommand(0x3A);
-	writeCommand(kSSD1331CommandVCOMH);		// 0xBE
+	writeCommand(kSSD1331CommandVCOMH); // 0xBE
 	writeCommand(0x3E);
-	writeCommand(kSSD1331CommandMASTERCURRENT);	// 0x87
+	writeCommand(kSSD1331CommandMASTERCURRENT); // 0x87
 	writeCommand(0x06);
-	writeCommand(kSSD1331CommandCONTRASTA);		// 0x81
+	writeCommand(kSSD1331CommandCONTRASTA); // 0x81
 	writeCommand(0x91);
-	writeCommand(kSSD1331CommandCONTRASTB);		// 0x82
+	writeCommand(kSSD1331CommandCONTRASTB); // 0x82
 	writeCommand(0x50);
-	writeCommand(kSSD1331CommandCONTRASTC);		// 0x83
+	writeCommand(kSSD1331CommandCONTRASTC); // 0x83
 	writeCommand(0x7D);
-	writeCommand(kSSD1331CommandDISPLAYON);		// Turn on oled panel
+	writeCommand(kSSD1331CommandDISPLAYON); // Turn on oled panel
 	SEGGER_RTT_WriteString(0, "\r\n\tDone with initialization sequence...\n");
 
 	/*
@@ -156,42 +161,28 @@ devSSD1331init(void)
 	writeCommand(0x3F);
 	SEGGER_RTT_WriteString(0, "\r\n\tDone with screen clear...\n");
 
+	return 0;
+}
 
+int devSSD1331fill(uint8_t r, uint8_t g, uint8_t b)
+{
 
-	/*
-	 *	Read the manual for the SSD1331 (SSD1331_1.2.pdf) to figure
-	 *	out how to fill the entire screen with the brightest shade
-	 *	of green.#
-		The following example illustrates the rectangle drawing command sequence.
-		1.   Enter the “draw rectangle mode” by execute the command 22h
-		2.   Set the starting column coordinates, Column 1. e.g., 03h.
-		3.   Set the starting row coordinates, Row 1. e.g., 02h.
-		4.   Set the finishing column coordinates, Column 2. e.g., 12h
-		5.   Set the finishing row coordinates, Row 2. e.g., 15h
-		6.   Set the outline color C, B and A. e.g., (28d, 0d, 0d) for blue color
-		7.   Set the filled color C, B and A.e.g., (0d, 0d, 40d) for red color
-	 */
-	writeCommand(0x22);  // Enter the “draw rectangle mode” by execute the command 22h
+	// Enter the “draw rectangle mode” by execute the command 22h
+	TRY_WRITING_COMMAND(0x22)
 	// top left corner
-	writeCommand(0);
-	writeCommand(0);
+	TRY_WRITING_COMMAND(0)
+	TRY_WRITING_COMMAND(0)
 	// bottom right corner
-	writeCommand(95);
-	writeCommand(63);
+	TRY_WRITING_COMMAND(95)
+	TRY_WRITING_COMMAND(63)
 	// rgb outline
-	writeCommand(0x0);
-	writeCommand(0x3F);
-	writeCommand(0x0);
+	TRY_WRITING_COMMAND(0x0)
+	TRY_WRITING_COMMAND(0x0)
+	TRY_WRITING_COMMAND(0x0)
 	// rgb fill
-	writeCommand(0x0);
-	writeCommand(0x3F);
-	writeCommand(0x0);
-
-
-
-	SEGGER_RTT_WriteString(0, "\r\n\tDone with draw rectangle...\n");
-
-
+	TRY_WRITING_COMMAND(r)
+	TRY_WRITING_COMMAND(g)
+	TRY_WRITING_COMMAND(b)
 
 	return 0;
 }
